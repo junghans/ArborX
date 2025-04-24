@@ -30,7 +30,7 @@ jobs:
       - name: Print build error
         if: failure()
         run: |
-          for f in 2.0/*.fc4*/*.log; do
+          for f in results_*/2.0/*.fc4*/*.log; do
             echo "FILE: $f"
             cat $f
           done

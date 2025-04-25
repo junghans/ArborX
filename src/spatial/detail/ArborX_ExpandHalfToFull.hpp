@@ -48,7 +48,6 @@ void expandHalfToFull(ExecutionSpace const &space, Offsets &offsets,
 
   auto counts = KokkosExt::clone(space, offsets,
                                  "ArborX::Experimental::HalfToFull::counts");
-#if 0
   Kokkos::parallel_for(
       "ArborX::Experimental::HalfToFull::rewrite",
       Kokkos::TeamPolicy(space, n, Kokkos::AUTO, 1),
@@ -59,24 +58,12 @@ void expandHalfToFull(ExecutionSpace const &space, Offsets &offsets,
         auto const first = offsets_orig(i);
         auto const last = offsets_orig(i + 1);
         Kokkos::parallel_for(
-            Kokkos::TeamVectorRange(member, last - first), [&](int j) {
+            Kokkos::TeamThreadRange(member, last - first), [&](int j) {
               int const k = indices_orig(first + j);
               indices(Kokkos::atomic_fetch_inc(&counts(i))) = k;
               indices(Kokkos::atomic_fetch_inc(&counts(k))) = i;
             });
       });
-#else
-  Kokkos::parallel_for(
-      "ArborX::Experimental::HalfToFull::rewrite",
-      Kokkos::RangePolicy(space, 0, n), KOKKOS_LAMBDA(int i) {
-        for (int j = offsets_orig(i); j < offsets_orig(i + 1); ++j)
-        {
-          int const k = indices_orig(j);
-          indices(Kokkos::atomic_fetch_inc(&counts(i))) = k;
-          indices(Kokkos::atomic_fetch_inc(&counts(k))) = i;
-        }
-      });
-#endif
   Kokkos::Profiling::popRegion();
 }
 

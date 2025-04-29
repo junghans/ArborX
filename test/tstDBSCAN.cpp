@@ -160,6 +160,8 @@ void dbscan_f()
   using ArborX::Details::verifyDBSCAN;
   using Point = ArborX::Point<3, Coordinate>;
 
+  constexpr bool verbose = true;
+
   ExecutionSpace space;
 
   for (auto impl : {ArborX::DBSCAN::Implementation::FDBSCAN,
@@ -172,23 +174,26 @@ void dbscan_f()
 
       Coordinate r = std::sqrt(3.1);
 
-      BOOST_TEST(
-          verifyDBSCAN(space, points, r - (Coordinate)0.1, 2,
-                       dbscan(space, points, r - (Coordinate)0.1, 2, params)));
+      BOOST_TEST(verifyDBSCAN(
+          space, points, r - (Coordinate)0.1, 2,
+          dbscan(space, points, r - (Coordinate)0.1, 2, params), verbose));
       BOOST_TEST(verifyDBSCAN(space, points, r, 2,
-                              dbscan(space, points, r, 2, params)));
+                              dbscan(space, points, r, 2, params), verbose));
       BOOST_TEST(verifyDBSCAN(space, points, r, 3,
-                              dbscan(space, points, r, 3, params)));
+                              dbscan(space, points, r, 3, params), verbose));
 
       // Test non-View primitives
       HiddenView<decltype(points)> hidden_points{points};
       BOOST_TEST(verifyDBSCAN(
           space, hidden_points, r - (Coordinate)0.1, 2,
-          dbscan(space, hidden_points, r - (Coordinate)0.1, 2, params)));
+          dbscan(space, hidden_points, r - (Coordinate)0.1, 2, params),
+          verbose));
       BOOST_TEST(verifyDBSCAN(space, hidden_points, r, 2,
-                              dbscan(space, hidden_points, r, 2, params)));
+                              dbscan(space, hidden_points, r, 2, params),
+                              verbose));
       BOOST_TEST(verifyDBSCAN(space, hidden_points, r, 3,
-                              dbscan(space, hidden_points, r, 3, params)));
+                              dbscan(space, hidden_points, r, 3, params),
+                              verbose));
     }
 
     {
@@ -198,25 +203,32 @@ void dbscan_f()
       Coordinate r = std::sqrt(3.1);
 
       BOOST_TEST(verifyDBSCAN(space, points, r, 2,
-                              dbscan(space, points, r, 2, params)));
+                              dbscan(space, points, r, 2, params), verbose));
       BOOST_TEST(verifyDBSCAN(space, points, r, 3,
-                              dbscan(space, points, r, 3, params)));
+                              dbscan(space, points, r, 3, params), verbose));
 
       BOOST_TEST(verifyDBSCAN(space, points, 2 * r, 2,
-                              dbscan(space, points, 2 * r, 2, params)));
+                              dbscan(space, points, 2 * r, 2, params),
+                              verbose));
       BOOST_TEST(verifyDBSCAN(space, points, 2 * r, 3,
-                              dbscan(space, points, 2 * r, 3, params)));
+                              dbscan(space, points, 2 * r, 3, params),
+                              verbose));
       BOOST_TEST(verifyDBSCAN(space, points, 2 * r, 4,
-                              dbscan(space, points, 2 * r, 4, params)));
+                              dbscan(space, points, 2 * r, 4, params),
+                              verbose));
 
       BOOST_TEST(verifyDBSCAN(space, points, 3 * r, 2,
-                              dbscan(space, points, 3 * r, 2, params)));
+                              dbscan(space, points, 3 * r, 2, params),
+                              verbose));
       BOOST_TEST(verifyDBSCAN(space, points, 3 * r, 3,
-                              dbscan(space, points, 3 * r, 3, params)));
+                              dbscan(space, points, 3 * r, 3, params),
+                              verbose));
       BOOST_TEST(verifyDBSCAN(space, points, 3 * r, 4,
-                              dbscan(space, points, 3 * r, 4, params)));
+                              dbscan(space, points, 3 * r, 4, params),
+                              verbose));
       BOOST_TEST(verifyDBSCAN(space, points, 3 * r, 5,
-                              dbscan(space, points, 3 * r, 5, params)));
+                              dbscan(space, points, 3 * r, 5, params),
+                              verbose));
     }
 
     {
@@ -230,9 +242,11 @@ void dbscan_f()
                                                {{1, -0.5, 0}}});
 
       BOOST_TEST(verifyDBSCAN(space, points, 1.0, 3,
-                              dbscan(space, points, (Coordinate)1, 3, params)));
+                              dbscan(space, points, (Coordinate)1, 3, params),
+                              verbose));
       BOOST_TEST(verifyDBSCAN(space, points, 1.0, 4,
-                              dbscan(space, points, (Coordinate)1, 4, params)));
+                              dbscan(space, points, (Coordinate)1, 4, params),
+                              verbose));
     }
   }
 
@@ -260,7 +274,7 @@ void dbscan_f()
     // This does *not* guarantee to trigger the issue, as it depends on the
     // specific implementation and runtime. But it may.
     BOOST_TEST(verifyDBSCAN(space, points, (Coordinate)1, 4,
-                            dbscan(space, points, (Coordinate)1, 4)));
+                            dbscan(space, points, (Coordinate)1, 4), verbose));
   }
 }
 

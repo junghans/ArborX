@@ -5,35 +5,9 @@ on:
 
 concurrency:
   group: ${ {github.event_name }}-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true 
+  cancel-in-progress: true
 
 jobs:
-  CI:
-    runs-on: ubuntu-24.04-arm
-    container:
-      image: registry.fedoraproject.org/fedora:latest
-      options: --privileged
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          path: ArborX-2.0
-      - name: Build fedpkg
-        run: dnf -y install fedpkg
-      - name: Make tarball
-        run: |
-          cp ArborX-2.0/test/ArborX.spec .
-          tar -czf ArborX-2.0.tar.gz ArborX-2.0/ 
-          spectool -g ArborX.spec
-      - name: Build rpm
-        run:  fedpkg --release rawhide mockbuild --use-koji-mock-config
-      - name: Print build error
-        if: failure()
-        run: |
-          for f in results_*/2.0/*.fc4*/*.log; do
-            echo "FILE: $f"
-            cat $f
-          done
   CI2:
     runs-on: ubuntu-24.04-arm
     container:
@@ -44,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Build fedpkg
         run: dnf -y builddep test/ArborX.spec
-      - name: Build 
+      - name: Build
         run:  |
           export CFLAGS='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -fstack-protector-strong -mbranch-protection=standard -fasynchronous-unwind-tables -fstack-clash-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer '
           export CXXFLAGS='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -fstack-protector-strong -mbranch-protection=standard -fasynchronous-unwind-tables -fstack-clash-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer '
